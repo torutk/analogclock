@@ -3,6 +3,7 @@
  */
 package analogclockimaging;
 
+import java.time.LocalTime;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -32,13 +33,13 @@ public class AnalogClockImaging extends Application {
         ImageView secondsHand = new ImageView(new Image("file:clockSecondsHand.png"));
         ImageView centerPoint = new ImageView(new Image("file:clockCenterPoint.png"));
 
-        RotateTransition secondsHandTransition = createRotateTransition(Duration.seconds(60), secondsHand, 360);
+        RotateTransition secondsHandTransition = createRotateTransition(Duration.seconds(60), secondsHand, getAngleOfSeconds(LocalTime.now()));
         secondsHandTransition.play();
 
-        RotateTransition minuteTransition = createRotateTransition(Duration.minutes(60), minuteHand, 360);
+        RotateTransition minuteTransition = createRotateTransition(Duration.minutes(60), minuteHand, getAngleOfMinute(LocalTime.now()));
         minuteTransition.play();
 
-        RotateTransition hourTranslation = createRotateTransition(Duration.hours(12), hourHand, 360);
+        RotateTransition hourTranslation = createRotateTransition(Duration.hours(12), hourHand, getAngleOfHour(LocalTime.now()));
         hourTranslation.play();
 
         root.getChildren().addAll(
@@ -51,12 +52,51 @@ public class AnalogClockImaging extends Application {
         primaryStage.show();
     }
 
-    private RotateTransition createRotateTransition(Duration duration, Node node, int angle) {
+    /**
+     * 360度回転を繰り返すアニメーションの設定。
+     *
+     * @param duration 1回転するのに要する時間
+     * @param node 回転するノード
+     * @param startAngle 回転開始角度
+     * @return 指定下パラメータで初期化したRotateTransitionインスタンス
+     */
+    private RotateTransition createRotateTransition(Duration duration, Node node, double startAngle) {
         RotateTransition rt = new RotateTransition(duration, node);
-        rt.setByAngle(angle);
+        rt.setFromAngle(startAngle);
+        rt.setByAngle(360);
         rt.setCycleCount(Animation.INDEFINITE);
         rt.setInterpolator(Interpolator.LINEAR);
         return rt;
+    }
+
+    /**
+     * 引数で指定した時刻における短針（時）の角度（0時を0度とした時計回り）
+     *
+     * @param time 時刻
+     * @return 指定した時刻における短針の角度
+     */
+    private static double getAngleOfHour(LocalTime time) {
+        return (time.getHour() % 12 + time.getMinute() / 60d + time.getSecond() / (60d * 60d)) * 360 / 12;
+    }
+
+    /**
+     * 引数で指定した時刻における長針（分）の角度（0分を0度とした時計回り）。
+     *
+     * @param time 時刻
+     * @return 指定した時刻における長針の角度
+     */
+    private static double getAngleOfMinute(LocalTime time) {
+        return (time.getMinute() + time.getSecond() / 60d) * 360 / 60;
+    }
+
+    /**
+     * 引数で指定した時刻における秒針（秒）の角度（0秒を0度とした時計回り）
+     *
+     * @param time 時刻
+     * @return 指定した時刻における秒針の角度
+     */
+    private static double getAngleOfSeconds(LocalTime time) {
+        return time.getSecond() * 360 / 60;
     }
 
     /**
