@@ -176,11 +176,11 @@ public class AnalogClockDrawing extends Application {
     }
 
     private int getMinuteAgnel(LocalTime time) {
-        return (int) (time.getMinute() + time.getSecond() / 60d) * 360 / 60;
+        return (int) ((time.getMinute() + time.getSecond() / 60d) * 360 / 60);
     }
 
     private int getHourAngle(LocalTime time) {
-        return (int) (time.getHour() % 12 + time.getMinute() / 60d + time.getSecond() / 3600d) * 360 / 12;
+        return (int) ((time.getHour() % 12 + time.getMinute() / 60d + time.getSecond() / 3600d) * 360 / 12);
     }
 
 }
