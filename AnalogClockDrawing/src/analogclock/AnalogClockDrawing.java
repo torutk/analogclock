@@ -40,7 +40,7 @@ import javax.imageio.ImageIO;
  */
 public class AnalogClockDrawing extends Application {
 
-    private static double UNIT_SIZE = 100d;
+    private static final double UNIT_SIZE = 100d;
     private Rotate secondsHandRotation;
     private Rotate minuteHandRotation;
     private Rotate hourHandRotation;
@@ -49,14 +49,12 @@ public class AnalogClockDrawing extends Application {
     public void start(Stage primaryStage) {
 
         Group root = new Group();
-        Node secondsHand = createSecondsHand();
-        Node tickMarks = createTickMarks();
         root.getChildren().addAll(
                 createDial(),
                 createMinuteHand(),
                 createHourHand(),
-                secondsHand,
-                tickMarks,
+                createSecondsHand(),
+                createTickMarks(),
                 createCenter()
         );
 
@@ -131,7 +129,7 @@ public class AnalogClockDrawing extends Application {
     // 時計の短針を作成する
     Node createHourHand() {
         hourHandRotation = new Rotate(0, UNIT_SIZE, UNIT_SIZE);
-        Node hourHand = createHourOrMinuteHand(UNIT_SIZE * 0.4, Color.BLACK, 0);
+        Node hourHand = createHourOrMinuteHand(UNIT_SIZE * 0.4, Color.BLACK);
         hourHand.getTransforms().add(hourHandRotation);
         return hourHand;
     }
@@ -139,7 +137,7 @@ public class AnalogClockDrawing extends Application {
     // 時計の長針を作成する
     Node createMinuteHand() {
         minuteHandRotation = new Rotate(0, UNIT_SIZE, UNIT_SIZE);
-        Node minuteHand = createHourOrMinuteHand(UNIT_SIZE * 0.2, Color.BLACK, 0);
+        Node minuteHand = createHourOrMinuteHand(UNIT_SIZE * 0.2, Color.BLACK);
         minuteHand.getTransforms().add(minuteHandRotation);
         return minuteHand;
     }
@@ -153,7 +151,7 @@ public class AnalogClockDrawing extends Application {
     }
 
     // 時計の針を作成する
-    Node createHourOrMinuteHand(double stretchRelativeToRim, Color color, int startAngle) {
+    Node createHourOrMinuteHand(double stretchRelativeToRim, Color color) {
         Path path = new Path(
                 new MoveTo(UNIT_SIZE, UNIT_SIZE),
                 new LineTo(UNIT_SIZE * 0.9, UNIT_SIZE * 0.9),
@@ -163,7 +161,6 @@ public class AnalogClockDrawing extends Application {
         );
         path.setFill(color);
         path.setStroke(Color.TRANSPARENT);
-        path.getTransforms().add(new Rotate(startAngle, UNIT_SIZE, UNIT_SIZE));
         return path;
     }
 
