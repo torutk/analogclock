@@ -28,8 +28,8 @@ public class AnalogClockSvg extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("AnalogClock.fxml"));
-
         Scene scene = new Scene(root, 200, 200, Color.TRANSPARENT);
+        // マウスのドラッグ操作でウィンドウを移動
         scene.setOnMousePressed(e -> {
             dragStartX = e.getSceneX();
             dragStartY = e.getSceneY();
@@ -38,7 +38,13 @@ public class AnalogClockSvg extends Application {
             stage.setX(e.getScreenX() - dragStartX);
             stage.setY(e.getScreenY() - dragStartY);
         });
-
+        // マウスのホイール操作でウィンドウサイズを変更
+        scene.setOnScroll(e -> {
+            double scaleFactor = e.getDeltaY() > 0 ? 1.1 : 0.9;
+            root.setScaleX(root.getScaleX() * scaleFactor);
+            root.setScaleY(root.getScaleY() * scaleFactor);
+        });
+        // 右クリックでポップアップメニュー
         MenuItem exitItem = new MenuItem("exit");
         exitItem.setOnAction(e -> Platform.exit());
         popup.getItems().add(exitItem);
