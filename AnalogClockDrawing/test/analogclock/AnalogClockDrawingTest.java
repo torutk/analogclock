@@ -40,6 +40,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
+ * 時計のパーツを描画してファイルに出力する機能を持つ
  *
  * @author TAKAHASHI,Toru
  */
@@ -84,8 +85,13 @@ public class AnalogClockDrawingTest {
     }
 
     @Test
-    public void testCreateDial() throws IOException {
-        createSceneAndCapture(sut.createDial(), "clockdial.png");
+    public void testCreateClockDial() throws IOException {
+        createSceneAndCapture(sut.createClockDial(), "clockdial.png");
+    }
+
+    @Test
+    public void testCreateCircle() throws IOException {
+        createSceneAndCapture(sut.createCircle(), "clockCircle.png");
     }
 
     @Test
@@ -115,7 +121,7 @@ public class AnalogClockDrawingTest {
 
     @Test
     public void testCreateSecondsHand() {
-        createSceneAndCapture(sut.createSecondsHand(), "clockSecondsHand.png");
+        createSceneAndCapture(sut.createSecondHand(), "clockSecondsHand.png");
     }
 
     @Test
