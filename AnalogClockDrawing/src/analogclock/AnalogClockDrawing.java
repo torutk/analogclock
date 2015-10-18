@@ -3,22 +3,19 @@
  */
 package analogclock;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalTime;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
 import java.util.stream.IntStream;
 import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
 import javafx.application.Application;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.image.WritableImage;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
@@ -31,7 +28,6 @@ import javafx.scene.shape.Path;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javax.imageio.ImageIO;
 
 /**
  * アナログ時計（長針、短針、秒針）を表示するプログラム。
@@ -41,55 +37,53 @@ import javax.imageio.ImageIO;
 public class AnalogClockDrawing extends Application {
 
     private static final double UNIT_SIZE = 100d;
-    private Rotate secondsHandRotation;
-    private Rotate minuteHandRotation;
-    private Rotate hourHandRotation;
 
     @Override
     public void start(Stage primaryStage) {
 
-        Group root = new Group();
+        StackPane root = new StackPane();
+        Node clockDial = createClockDial();
+        Node hourHand = createHourHand();
+        Node minuteHand = createMinuteHand();
+        Node secondHand = createSecondHand();
+        Node centerPoint = createCenter();
+
         root.getChildren().addAll(
-                createDial(),
-                createMinuteHand(),
-                createHourHand(),
-                createSecondsHand(),
-                createTickMarks(),
-                createCenter()
+                clockDial, hourHand, minuteHand, secondHand, centerPoint
         );
 
         LocalTime time = LocalTime.now();
-        Timeline secondsAnimation = createRotateTimeline(Duration.seconds(60), getSecondsAngle(time), secondsHandRotation);
-        secondsAnimation.play();
-        Timeline minuteAnimation = createRotateTimeline(Duration.minutes(60), getMinuteAgnel(time), minuteHandRotation);
-        minuteAnimation.play();
-        Timeline hourAnimation = createRotateTimeline(Duration.hours(12), getHourAngle(time), hourHandRotation);
-        hourAnimation.play();
+        RotateTransition secondsTransition = createRotateTransition(Duration.seconds(60), secondHand, getSecondsAngle(time));
+        secondsTransition.play();
+        RotateTransition minuteTransition = createRotateTransition(Duration.minutes(60), minuteHand, getMinuteAgnel(time));
+        minuteTransition.play();
+        RotateTransition hourTransition = createRotateTransition(Duration.hours(12), hourHand, getHourAngle(time));
+        hourTransition.play();
 
-        Scene scene = new Scene(root, UNIT_SIZE * 2, UNIT_SIZE * 2);
-        WritableImage snapshot = scene.snapshot(null);
-        try {
-            ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", new File("clockSecondsHand.png"));
-        } catch (IOException ex) {
+        Scene scene = new Scene(root);
 
-        }
-        primaryStage.setTitle("Hello World!");
+        primaryStage.setTitle("Clock");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    Timeline createRotateTimeline(Duration duration, int startAngle, Rotate rotate) {
-        Timeline timeline = new Timeline();
-        rotate.setAngle(startAngle);
-        timeline.getKeyFrames().add(
-                new KeyFrame(duration, new KeyValue(rotate.angleProperty(), startAngle + 360))
-        );
-        timeline.setCycleCount(Animation.INDEFINITE);
-        return timeline;
+    RotateTransition createRotateTransition(Duration duration, Node node, int startAngle) {
+        RotateTransition rt = new RotateTransition(duration, node);
+        rt.setFromAngle(startAngle);
+        rt.setByAngle(360);
+        rt.setCycleCount(Animation.INDEFINITE);
+        rt.setInterpolator(Interpolator.LINEAR);
+        return rt;
+    }
+
+    Node createClockDial() {
+        Pane pane = new Pane();
+        pane.getChildren().addAll(createCircle(), createTickMarks());
+        return pane;
     }
 
     // 時計の文字盤（背景）を作成する
-    Node createDial() {
+    Node createCircle() {
         RadialGradient gradient = new RadialGradient(
                 0, 0, 0.5, 0.5, 0.5, true, CycleMethod.NO_CYCLE,
                 new Stop(0.8, Color.WHITE), new Stop(0.9, Color.BLACK), new Stop(0.95, Color.WHITE), new Stop(1.0, Color.BLACK)
@@ -128,26 +122,29 @@ public class AnalogClockDrawing extends Application {
 
     // 時計の短針を作成する
     Node createHourHand() {
-        hourHandRotation = new Rotate(0, UNIT_SIZE, UNIT_SIZE);
+        Pane pane = new Pane();
+        pane.setPrefSize(UNIT_SIZE * 2, UNIT_SIZE * 2);
         Node hourHand = createHourOrMinuteHand(UNIT_SIZE * 0.4, Color.BLACK);
-        hourHand.getTransforms().add(hourHandRotation);
-        return hourHand;
+        pane.getChildren().add(hourHand);
+        return pane;
     }
 
     // 時計の長針を作成する
     Node createMinuteHand() {
-        minuteHandRotation = new Rotate(0, UNIT_SIZE, UNIT_SIZE);
+        Pane pane = new Pane();
+        pane.setPrefSize(UNIT_SIZE * 2, UNIT_SIZE * 2);
         Node minuteHand = createHourOrMinuteHand(UNIT_SIZE * 0.2, Color.BLACK);
-        minuteHand.getTransforms().add(minuteHandRotation);
-        return minuteHand;
+        pane.getChildren().add(minuteHand);
+        return pane;
     }
 
     // 時計の秒針を作成する
-    Node createSecondsHand() {
+    Node createSecondHand() {
+        Pane pane = new Pane();
+        pane.setPrefSize(UNIT_SIZE * 2, UNIT_SIZE * 2);
         Line line = new Line(UNIT_SIZE, UNIT_SIZE * 1.1, UNIT_SIZE, UNIT_SIZE * 0.2);
-        secondsHandRotation = new Rotate(0, UNIT_SIZE, UNIT_SIZE);
-        line.getTransforms().add(secondsHandRotation);
-        return line;
+        pane.getChildren().add(line);
+        return pane;
     }
 
     // 時計の針を作成する
