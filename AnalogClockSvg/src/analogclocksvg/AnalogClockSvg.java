@@ -6,11 +6,11 @@ package analogclocksvg;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -20,32 +20,36 @@ import javafx.stage.StageStyle;
  * @author TAKAHASHI,Toru
  */
 public class AnalogClockSvg extends Application {
-
+    private static final double INITIAL_WINDOW_SIZE = 200d;
+    private static final double MAX_SCALE = 6d;
+    private static final double MIN_SCALE = 0.32;
+    
     private double dragStartX;
     private double dragStartY;
-    private boolean isScrollStarted;
     private ContextMenu popup = new ContextMenu();
-    private Parent root;
+    private Region root;
+    private Stage stage;
     
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage primaryStage) throws Exception {
         root = FXMLLoader.load(getClass().getResource("AnalogClock.fxml"));
-        Scene scene = new Scene(root, 200, 200, Color.TRANSPARENT);
+        Scene scene = new Scene(root, INITIAL_WINDOW_SIZE, INITIAL_WINDOW_SIZE, Color.TRANSPARENT);
+        root.prefWidthProperty().bind(scene.widthProperty());
+        root.prefHeightProperty().bind(scene.heightProperty());
+        
         // マウスのドラッグ操作でウィンドウを移動
         scene.setOnMousePressed(e -> {
             dragStartX = e.getSceneX();
             dragStartY = e.getSceneY();
         });
         scene.setOnMouseDragged(e -> {
-            stage.setX(e.getScreenX() - dragStartX);
-            stage.setY(e.getScreenY() - dragStartY);
+            primaryStage.setX(e.getScreenX() - dragStartX);
+            primaryStage.setY(e.getScreenY() - dragStartY);
         });
         // 時計のサイズを変更する
-        // マウスのホイール操作でウィンドウサイズを変更
-        scene.setOnScrollStarted(e -> isScrollStarted = true);
-        scene.setOnScrollFinished(e ->isScrollStarted = false);
+        // マウスのホイール操作によるScrollEventを選別してウィンドウサイズを変更
         scene.setOnScroll(e -> {
-            if (isScrollStarted) return;
+            if (e.getTouchCount() != 0 || e.isInertia()) return;
             double zoomFactor = e.getDeltaY() > 0 ? 1.1 : 0.9;
             zoom(zoomFactor);
         });
@@ -53,24 +57,37 @@ public class AnalogClockSvg extends Application {
         scene.setOnZoom(e -> {
             zoom(e.getZoomFactor());
         });
-        // 右クリックでポップアップメニュー
+
+        // ポップアップメニュー        
         MenuItem exitItem = new MenuItem("exit");
         exitItem.setOnAction(e -> Platform.exit());
-        popup.getItems().add(exitItem);
+        MenuItem zoomInItem = new MenuItem("zoomIn");
+        zoomInItem.setOnAction(e -> zoom(1.1));
+        MenuItem zoomOutItem = new MenuItem("zoomOut");
+        zoomOutItem.setOnAction(e -> zoom(0.9));
+        popup.getItems().addAll(zoomInItem, zoomOutItem, exitItem);
+        // 右クリックでポップアップメニュー表示
         scene.setOnMouseClicked(e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
-                popup.show(stage, e.getScreenX(), e.getScreenY());
+                popup.show(primaryStage, e.getScreenX(), e.getScreenY());
             }
         });
-
-        stage.initStyle(StageStyle.TRANSPARENT);
-        stage.setScene(scene);
-        stage.show();
+        // タッチパネルの長押しでポップアップメニュー表示
+        scene.setOnTouchStationary(e -> popup.show(primaryStage));
+        
+        stage = primaryStage;
+        primaryStage.initStyle(StageStyle.TRANSPARENT);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
     private void zoom(double factor) {
-        root.setScaleX(root.getScaleX() * factor);
-        root.setScaleY(root.getScaleY() * factor);
+        double scale = root.getScaleX() * factor;
+        scale = Math.max(Math.min(scale, MAX_SCALE), MIN_SCALE);
+        root.setScaleX(scale);
+        root.setScaleY(scale);
+        stage.setWidth(INITIAL_WINDOW_SIZE * scale);
+        stage.setHeight(INITIAL_WINDOW_SIZE * scale);
     }
 
     /**
