@@ -5,6 +5,7 @@ package analogclockimaging;
 
 import java.time.LocalTime;
 import javafx.animation.Animation;
+import javafx.animation.AnimationTimer;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.application.Application;
@@ -22,6 +23,10 @@ import javafx.util.Duration;
  * @author TAKAHASHI,Toru
  */
 public class AnalogClockImaging extends Application {
+
+    private double dragStartX;
+    private double dragStartY;
+    private boolean isScrollStarted;
 
     @Override
     public void start(Stage primaryStage) {
@@ -46,6 +51,42 @@ public class AnalogClockImaging extends Application {
                 clockDial, hourHand, minuteHand, secondsHand, centerPoint
         );
         Scene scene = new Scene(root);
+
+        new AnimationTimer() {
+            long prev;
+
+            @Override
+            public void handle(long now) {
+                if (now - prev > 1_000_000_000) {
+                    prev = now;
+                    System.out.println("AnimationTimer#handle: " + now);
+                }
+            }
+
+        }.start();
+        // マウスのドラッグ操作でウィンドウを移動
+        scene.setOnMousePressed(e -> {
+            dragStartX = e.getSceneX();
+            dragStartY = e.getSceneY();
+        });
+        scene.setOnMouseDragged(e -> {
+            primaryStage.setX(e.getScreenX() - dragStartX);
+            primaryStage.setY(e.getScreenY() - dragStartY);
+        });
+
+        // 時計のサイズを変更する
+        // マウスのホイール操作でウィンドウサイズを変更
+        scene.setOnScrollStarted(e -> isScrollStarted = true);
+        scene.setOnScrollFinished(e -> isScrollStarted = false);
+        scene.setOnScroll(e -> {
+            if (isScrollStarted) {
+                return;
+            }
+            System.out.println("OnScroll");
+            double zoomFactor = e.getDeltaY() > 0 ? 1.1 : 0.9;
+            root.setScaleX(root.getScaleX() * zoomFactor);
+            root.setScaleY(root.getScaleY() * zoomFactor);
+        });
 
         primaryStage.setTitle("Clock");
         primaryStage.setScene(scene);
