@@ -9,14 +9,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 /**
- *
+ * アナログ時計表示プログラム。
+ * 
  * @author TAKAHASHI,Toru
  */
 public class AnalogClockSvg extends Application {
@@ -66,14 +66,11 @@ public class AnalogClockSvg extends Application {
         MenuItem zoomOutItem = new MenuItem("zoomOut");
         zoomOutItem.setOnAction(e -> zoom(0.9));
         popup.getItems().addAll(zoomInItem, zoomOutItem, exitItem);
-        // 右クリックでポップアップメニュー表示
-        scene.setOnMouseClicked(e -> {
-            if (e.getButton() == MouseButton.SECONDARY) {
-                popup.show(primaryStage, e.getScreenX(), e.getScreenY());
-            }
+        // コンテキストメニュー操作（OS依存）をしたときに、ポップアップメニュー表示
+        // Windows OSでは、マウスの右クリック、touchパネルの長押しで発生
+        root.setOnContextMenuRequested(e -> {
+            popup.show(primaryStage, e.getScreenX(), e.getScreenY());
         });
-        // タッチパネルの長押しでポップアップメニュー表示
-        scene.setOnTouchStationary(e -> popup.show(primaryStage));
         
         stage = primaryStage;
         primaryStage.initStyle(StageStyle.TRANSPARENT);
