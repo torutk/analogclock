@@ -17,7 +17,7 @@ import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
 /**
- *
+ * 
  * @author TAKAHASHI,Toru
  */
 public class AnalogClockController implements Initializable {

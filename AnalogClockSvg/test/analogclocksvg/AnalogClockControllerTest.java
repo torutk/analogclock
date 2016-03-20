@@ -45,10 +45,18 @@ public class AnalogClockControllerTest {
         System.out.println(pathData);
     }
 
+    /**
+     * 文字盤の分個別のラインを生成する。
+     * 
+     * 5分置きに長い線を、それ以外の分は短い線を作成し、分に応じて回転させる。
+     * 
+     * @param minute 生成する対象の分
+     * @return 指定した分に対応するライン
+     */
     private Line createLine(int minute) {
         Rotate rot = new Rotate(minute * 6, 100, 100);
-        Point2D p0 = rot.transform(100, minute % 5 == 0 ? 12 : 15);
-        Point2D p1 = rot.transform(100, minute % 5 == 0 ? 22 : 16);
+        Point2D p0 = rot.transform(100, minute % 5 == 0 ? 12 : 16);
+        Point2D p1 = rot.transform(100, minute % 5 == 0 ? 24 : 18);
         Line line = new Line(p0.getX(), p0.getY(), p1.getX(), p1.getY());
         return line;
     }
