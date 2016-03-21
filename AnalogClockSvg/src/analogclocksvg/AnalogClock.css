@@ -1,0 +1,29 @@
+/*
+Copyright © 2015 TAKAHASHI,Toru
+*/
+/* 
+    Created on : 2016/03/21, 13:50:55
+    Author     : toru
+*/
+
+#dialBase {
+    -fx-fill: radial-gradient(center 50% 50%, radius 50%, #fafbf5, #fafbf5 80%, black 90%, #fafbf5 95%, black);
+}
+
+#dialMinutes {
+    -fx-stroke: black;
+}
+
+#secondHand {
+    -fx-stroke: red;
+}
+
+#minuteHand {
+    -fx-stroke: blue;
+    -fx-fill: blue;
+}
+
+#hourHand {
+    -fx-stroke: blue;
+    -fx-fill: blue;
+}
