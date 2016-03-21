@@ -3,6 +3,7 @@
  */
 package analogclocksvg;
 
+import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -29,10 +30,12 @@ public class AnalogClockSvg extends Application {
     private ContextMenu popup = new ContextMenu();
     private Region root;
     private Stage stage;
+    private ResourceBundle bundle;
     
     @Override
     public void start(Stage primaryStage) throws Exception {
-        root = FXMLLoader.load(getClass().getResource("AnalogClock.fxml"));
+        bundle = ResourceBundle.getBundle(getClass().getName());
+        root = FXMLLoader.load(getClass().getResource("AnalogClock.fxml"), bundle);
         Scene scene = new Scene(root, INITIAL_WINDOW_SIZE, INITIAL_WINDOW_SIZE, Color.TRANSPARENT);
         root.prefWidthProperty().bind(scene.widthProperty());
         root.prefHeightProperty().bind(scene.heightProperty());
@@ -59,11 +62,11 @@ public class AnalogClockSvg extends Application {
         });
 
         // ポップアップメニュー        
-        MenuItem exitItem = new MenuItem("exit");
+        MenuItem exitItem = new MenuItem(bundle.getString("menu_exit"));
         exitItem.setOnAction(e -> Platform.exit());
-        MenuItem zoomInItem = new MenuItem("zoomIn");
+        MenuItem zoomInItem = new MenuItem(bundle.getString("menu_zoomIn"));
         zoomInItem.setOnAction(e -> zoom(1.1));
-        MenuItem zoomOutItem = new MenuItem("zoomOut");
+        MenuItem zoomOutItem = new MenuItem(bundle.getString("menu_zoomOut"));
         zoomOutItem.setOnAction(e -> zoom(0.9));
         popup.getItems().addAll(zoomInItem, zoomOutItem, exitItem);
         // コンテキストメニュー操作（OS依存）をしたときに、ポップアップメニュー表示

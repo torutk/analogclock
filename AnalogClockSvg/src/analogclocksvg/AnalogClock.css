@@ -19,11 +19,31 @@ Copyright © 2015 TAKAHASHI,Toru
 }
 
 #minuteHand {
-    -fx-stroke: blue;
-    -fx-fill: blue;
+    -fx-stroke: black;
+    -fx-fill: black;
 }
 
 #hourHand {
-    -fx-stroke: blue;
-    -fx-fill: blue;
+    -fx-stroke: black;
+    -fx-fill: black;
+}
+
+.context-menu {
+    -fx-background-color: lightgrey;
+}
+
+.menu-item {
+    -fx-font-size: 16;
+    -fx-padding: 8 12 8 12;
+    -fx-border-style: solid;
+    -fx-border-color: darkgrey;
+    -fx-border-radius: 4;
+}
+
+.menu-item:hover {
+    -fx-background-radius: 4;
+}
+
+.menu-item:focused {
+    -fx-background-radius: 4;
 }
