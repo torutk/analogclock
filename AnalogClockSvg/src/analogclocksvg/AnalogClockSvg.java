@@ -3,6 +3,7 @@
  */
 package analogclocksvg;
 
+import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -24,7 +25,7 @@ public class AnalogClockSvg extends Application {
     private static final double INITIAL_WINDOW_SIZE = 200d;
     private static final double MAX_SCALE = 6d;
     private static final double MIN_SCALE = 0.32;
-    
+
     private double dragStartX;
     private double dragStartY;
     private ContextMenu popup = new ContextMenu();
@@ -34,6 +35,7 @@ public class AnalogClockSvg extends Application {
     
     @Override
     public void start(Stage primaryStage) throws Exception {
+        parseParameters();
         bundle = ResourceBundle.getBundle(getClass().getName());
         root = FXMLLoader.load(getClass().getResource("AnalogClock.fxml"), bundle);
         Scene scene = new Scene(root, INITIAL_WINDOW_SIZE, INITIAL_WINDOW_SIZE, Color.TRANSPARENT);
@@ -95,6 +97,13 @@ public class AnalogClockSvg extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private void parseParameters() {
+        Map<String, String> params = getParameters().getNamed();
+        Platform.runLater(() -> zoom(Double.valueOf(params.getOrDefault("scale", "1.0"))));
+        Platform.runLater(() -> stage.setX(Double.valueOf(params.getOrDefault("x", "0.0"))));
+        Platform.runLater(() -> stage.setY(Double.valueOf(params.getOrDefault("y", "0.0"))));
     }
 
 }
