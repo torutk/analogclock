@@ -104,6 +104,7 @@ public class AnalogClockSvg extends Application {
         Platform.runLater(() -> zoom(Double.valueOf(params.getOrDefault("scale", "1.0"))));
         Platform.runLater(() -> stage.setX(Double.valueOf(params.getOrDefault("x", "0.0"))));
         Platform.runLater(() -> stage.setY(Double.valueOf(params.getOrDefault("y", "0.0"))));
+        AnalogClockController.setTargetFramerate(Double.valueOf(params.getOrDefault("fps", "60.0")));
     }
 
 }

@@ -21,7 +21,7 @@ import javafx.util.Duration;
  * @author TAKAHASHI,Toru
  */
 public class AnalogClockController implements Initializable {
-
+    private static double framerate;
     @FXML
     private SVGPath hourHand;
     @FXML
@@ -29,6 +29,10 @@ public class AnalogClockController implements Initializable {
     @FXML
     private SVGPath secondHand;
 
+    public static void setTargetFramerate(double rate) {
+        framerate = rate;
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         LocalTime now = LocalTime.now();
@@ -51,7 +55,7 @@ public class AnalogClockController implements Initializable {
     }
 
     private Timeline createRotateTimeline(Duration duration, int startAngle, Rotate rotate) {
-        Timeline timeline = new Timeline();
+        Timeline timeline = new Timeline(framerate);
         rotate.setAngle(startAngle);
         timeline.getKeyFrames().add(new KeyFrame(duration, new KeyValue(rotate.angleProperty(), startAngle + 360)));
         timeline.setCycleCount(Animation.INDEFINITE);
