@@ -56,7 +56,7 @@ public class AnalogClockControllerTest {
     private Line createLine(int minute) {
         Rotate rot = new Rotate(minute * 6, 100, 100);
         Point2D p0 = rot.transform(100, minute % 5 == 0 ? 12 : 16);
-        Point2D p1 = rot.transform(100, minute % 5 == 0 ? 24 : 18);
+        Point2D p1 = rot.transform(100, minute % 5 == 0 ? 32 : 18);
         Line line = new Line(p0.getX(), p0.getY(), p1.getX(), p1.getY());
         return line;
     }
